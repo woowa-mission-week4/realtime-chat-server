@@ -46,3 +46,6 @@ out/
 gradle/
 gradlew
 gradlew.bat
+
+### Node ###
+node_modules/
