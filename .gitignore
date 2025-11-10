@@ -49,3 +49,8 @@ gradlew.bat
 
 ### Node ###
 node_modules/
+
+### Environment Variables ###
+.env
+.env.local
+.env.prod
