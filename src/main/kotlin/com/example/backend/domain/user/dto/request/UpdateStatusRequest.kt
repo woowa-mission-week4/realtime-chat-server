@@ -1,6 +1,6 @@
-package com.example.backend.dto
+package com.example.backend.domain.user.dto.request
 
-import com.example.backend.entity.UserStatus
+import com.example.backend.domain.user.entity.enums.UserStatus
 import jakarta.validation.constraints.NotNull
 
 data class UpdateStatusRequest(

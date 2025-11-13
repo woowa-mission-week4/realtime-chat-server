@@ -1,9 +1,9 @@
-package com.example.backend.controller
+package com.example.backend.domain.user.controller
 
-import com.example.backend.dto.AuthResponse
-import com.example.backend.dto.LoginRequest
-import com.example.backend.dto.SignupRequest
-import com.example.backend.service.AuthService
+import com.example.backend.domain.user.dto.response.AuthResponse
+import com.example.backend.domain.user.dto.request.LoginRequest
+import com.example.backend.domain.user.dto.request.SignupRequest
+import com.example.backend.domain.user.service.AuthService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

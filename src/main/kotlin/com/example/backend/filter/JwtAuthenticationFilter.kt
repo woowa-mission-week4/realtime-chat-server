@@ -1,6 +1,6 @@
 package com.example.backend.filter
 
-import com.example.backend.util.JwtUtil
+import com.example.backend.global.security.JwtUtil
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

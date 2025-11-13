@@ -1,9 +1,9 @@
-package com.example.backend.controller
+package com.example.backend.domain.user.controller
 
-import com.example.backend.dto.UpdateProfileRequest
-import com.example.backend.dto.UpdateStatusRequest
-import com.example.backend.dto.UserResponse
-import com.example.backend.service.UserService
+import com.example.backend.domain.user.dto.request.UpdateProfileRequest
+import com.example.backend.domain.user.dto.request.UpdateStatusRequest
+import com.example.backend.domain.user.dto.response.UserResponse
+import com.example.backend.domain.user.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

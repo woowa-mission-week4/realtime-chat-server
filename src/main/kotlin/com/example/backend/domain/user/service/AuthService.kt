@@ -1,13 +1,13 @@
-package com.example.backend.service
+package com.example.backend.domain.user.service
 
-import com.example.backend.dto.AuthResponse
-import com.example.backend.dto.LoginRequest
-import com.example.backend.dto.SignupRequest
-import com.example.backend.dto.UserResponse
-import com.example.backend.entity.User
-import com.example.backend.entity.UserStatus
-import com.example.backend.repository.UserRepository
-import com.example.backend.util.JwtUtil
+import com.example.backend.domain.user.dto.response.AuthResponse
+import com.example.backend.domain.user.dto.request.LoginRequest
+import com.example.backend.domain.user.dto.request.SignupRequest
+import com.example.backend.domain.user.dto.response.UserResponse
+import com.example.backend.domain.user.entity.User
+import com.example.backend.domain.user.entity.enums.UserStatus
+import com.example.backend.domain.user.repository.UserRepository
+import com.example.backend.global.security.JwtUtil
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder

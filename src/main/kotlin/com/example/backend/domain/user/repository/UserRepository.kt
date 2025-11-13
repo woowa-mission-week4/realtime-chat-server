@@ -1,7 +1,7 @@
-package com.example.backend.repository
+package com.example.backend.domain.user.repository
 
-import com.example.backend.entity.User
-import com.example.backend.entity.UserStatus
+import com.example.backend.domain.user.entity.User
+import com.example.backend.domain.user.entity.enums.UserStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional

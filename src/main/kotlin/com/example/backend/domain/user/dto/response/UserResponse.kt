@@ -1,7 +1,7 @@
-package com.example.backend.dto
+package com.example.backend.domain.user.dto.response
 
-import com.example.backend.entity.User
-import com.example.backend.entity.UserStatus
+import com.example.backend.domain.user.entity.User
+import com.example.backend.domain.user.entity.enums.UserStatus
 import java.time.LocalDateTime
 
 data class UserResponse(

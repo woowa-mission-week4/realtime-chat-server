@@ -1,6 +1,6 @@
-package com.example.backend.util
+package com.example.backend.global.security
 
-import com.example.backend.config.JwtProperties
+import com.example.backend.global.config.JwtProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys

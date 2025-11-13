@@ -1,6 +1,6 @@
-package com.example.backend.service
+package com.example.backend.domain.user.service
 
-import com.example.backend.repository.UserRepository
+import com.example.backend.domain.user.repository.UserRepository
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

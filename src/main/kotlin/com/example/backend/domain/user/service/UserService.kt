@@ -1,10 +1,10 @@
-package com.example.backend.service
+package com.example.backend.domain.user.service
 
-import com.example.backend.dto.UpdateProfileRequest
-import com.example.backend.dto.UpdateStatusRequest
-import com.example.backend.dto.UserResponse
-import com.example.backend.entity.UserStatus
-import com.example.backend.repository.UserRepository
+import com.example.backend.domain.user.dto.request.UpdateProfileRequest
+import com.example.backend.domain.user.dto.request.UpdateStatusRequest
+import com.example.backend.domain.user.dto.response.UserResponse
+import com.example.backend.domain.user.entity.enums.UserStatus
+import com.example.backend.domain.user.repository.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 

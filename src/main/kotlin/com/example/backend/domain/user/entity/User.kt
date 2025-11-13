@@ -1,5 +1,6 @@
-package com.example.backend.entity
+package com.example.backend.domain.user.entity
 
+import com.example.backend.domain.user.entity.enums.UserStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
