@@ -6,6 +6,8 @@ import com.example.backend.domain.user.dto.request.SignupRequest
 import com.example.backend.domain.user.dto.response.UserResponse
 import com.example.backend.domain.user.entity.User
 import com.example.backend.domain.user.entity.enums.UserStatus
+import com.example.backend.domain.user.exception.UserException
+import com.example.backend.domain.user.exception.message.UserExceptionMessage
 import com.example.backend.domain.user.repository.UserRepository
 import com.example.backend.global.security.JwtUtil
 import org.springframework.security.authentication.AuthenticationManager
@@ -23,12 +25,12 @@ class AuthService(
     fun signup(request: SignupRequest): AuthResponse {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.email)) {
-            throw IllegalArgumentException("이미 사용 중인 이메일입니다")
+            throw UserException(UserExceptionMessage.EMAIL_ALREADY_USE);
         }
 
         // 닉네임 중복 체크
         if (userRepository.existsByNickname(request.nickname)) {
-            throw IllegalArgumentException("이미 사용 중인 닉네임입니다")
+            throw UserException(UserExceptionMessage.NICKNAME_ALREADY_USE);
         }
 
         // 사용자 생성
@@ -61,7 +63,9 @@ class AuthService(
         // 사용자 조회
         val user =
             userRepository.findByEmail(request.email)
-                .orElseThrow { IllegalArgumentException("사용자를 찾을 수 없습니다") }
+                .orElseThrow {
+                    throw UserException(UserExceptionMessage.NOT_FOUND_USER);
+                }
 
         // 온라인 상태로 변경
         user.status = UserStatus.ONLINE
