@@ -22,11 +22,14 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.kafka:spring-kafka")
+
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
@@ -45,10 +48,6 @@ dependencies {
     // Swagger / Springdoc OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
