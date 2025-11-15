@@ -2,20 +2,12 @@ package com.example.backend.global.exception
 
 open class BusinessException(
     val exceptionMessage: ExceptionMessage
-) : RuntimeException(exceptionMessage.getMessage()) {
+) : RuntimeException(exceptionMessage.message) {
 
-    val className: String
-    val methodName: String
-    val lineNumber: Int
+    val className: String = Thread.currentThread().stackTrace[2].className
+    val methodName: String = Thread.currentThread().stackTrace[2].methodName
+    val lineNumber: Int = Thread.currentThread().stackTrace[2].lineNumber
 
-    init {
-        val stack = Thread.currentThread().stackTrace
-        className = stack[2].className
-        methodName = stack[2].methodName
-        lineNumber = stack[2].lineNumber
-    }
-
-    fun extractExceptionLocation(): String {
-        return "[${className}][${methodName}][${lineNumber}]: "
-    }
+    fun extractExceptionLocation(): String =
+        "[${className}][${methodName}][${lineNumber}]: "
 }

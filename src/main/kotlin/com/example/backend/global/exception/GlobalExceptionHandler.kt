@@ -96,7 +96,7 @@ class GlobalExceptionHandler {
     }
 
     private fun buildExceptionResponse(exceptionMessage: ExceptionMessage): ResponseEntity<ExceptionResponse> {
-        return ResponseEntity.status(exceptionMessage.getHttpStatus())
+        return ResponseEntity.status(exceptionMessage.httpStatus)
             .body(ExceptionResponse.fail(exceptionMessage))
     }
 

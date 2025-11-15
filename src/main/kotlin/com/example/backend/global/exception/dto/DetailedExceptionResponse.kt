@@ -13,9 +13,9 @@ class DetailedExceptionResponse(
 
     companion object {
         fun fail(exceptionMessage: ExceptionMessage, errors: List<ErrorSpot>): DetailedExceptionResponse =
-            DetailedExceptionResponse(false, exceptionMessage.getMessage(), errors)
+            DetailedExceptionResponse(false, exceptionMessage.message, errors)
 
         fun fail(exceptionMessage: ExceptionMessage, error: ErrorSpot): DetailedExceptionResponse =
-            DetailedExceptionResponse(false, exceptionMessage.getMessage(), listOf(error))
+            DetailedExceptionResponse(false, exceptionMessage.message, listOf(error))
     }
 }

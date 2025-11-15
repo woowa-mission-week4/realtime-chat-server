@@ -13,7 +13,7 @@ open class ExceptionResponse(
 ) {
     companion object {
         fun fail(exceptionMessage: ExceptionMessage): ExceptionResponse =
-            ExceptionResponse(false, exceptionMessage.getMessage())
+            ExceptionResponse(false, exceptionMessage.message)
     }
 }
 
