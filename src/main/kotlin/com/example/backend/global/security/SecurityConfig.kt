@@ -1,6 +1,6 @@
 package com.example.backend.global.security
 
-import com.example.backend.filter.JwtAuthenticationFilter
+import com.example.backend.global.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

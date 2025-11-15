@@ -1,85 +1,108 @@
-package com.example.backend.exception
+package com.example.backend.global.exception
 
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.validation.FieldError
+import org.springframework.security.authorization.AuthorizationDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import java.time.LocalDateTime
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.servlet.resource.NoResourceFoundException
+import com.example.backend.global.exception.dto.DetailedExceptionResponse
+import com.example.backend.global.exception.dto.ErrorSpot;
+import com.example.backend.global.exception.dto.ExceptionResponse
+import org.springframework.http.converter.HttpMessageNotReadableException
 
-data class ErrorResponse(
-    val timestamp: LocalDateTime = LocalDateTime.now(),
-    val status: Int,
-    val error: String,
-    val message: String,
-    val details: Map<String, String>? = null,
-)
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<ErrorResponse> {
-        val errorResponse =
-            ErrorResponse(
-                status = HttpStatus.BAD_REQUEST.value(),
-                error = "Bad Request",
-                message = ex.message ?: "잘못된 요청입니다",
-            )
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+
+    // Spring Security 권한 예외 처리
+    @ExceptionHandler(AuthorizationDeniedException::class)
+    fun handleAuthorizationDeniedException(
+        exception: AuthorizationDeniedException
+    ): ResponseEntity<ExceptionResponse> {
+        return if (isUserAuthenticated()) {
+            buildExceptionResponse(GlobalExceptionMessage.ACCESS_DENIED_MESSAGE)
+        } else {
+            buildExceptionResponse(GlobalExceptionMessage.JWT_VALIDATION_FAILED)
+        }
     }
 
-    @ExceptionHandler(UsernameNotFoundException::class)
-    fun handleUsernameNotFoundException(ex: UsernameNotFoundException): ResponseEntity<ErrorResponse> {
-        val errorResponse =
-            ErrorResponse(
-                status = HttpStatus.NOT_FOUND.value(),
-                error = "Not Found",
-                message = ex.message ?: "사용자를 찾을 수 없습니다",
-            )
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
-    }
-
-    @ExceptionHandler(BadCredentialsException::class)
-    fun handleBadCredentialsException(ex: BadCredentialsException): ResponseEntity<ErrorResponse> {
-        val errorResponse =
-            ErrorResponse(
-                status = HttpStatus.UNAUTHORIZED.value(),
-                error = "Unauthorized",
-                message = "이메일 또는 비밀번호가 올바르지 않습니다",
-            )
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse)
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationException(ex: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-        val errors =
-            ex.bindingResult.allErrors.associate {
-                val fieldName = (it as FieldError).field
-                val errorMessage = it.defaultMessage ?: "유효하지 않은 값입니다"
-                fieldName to errorMessage
-            }
-
-        val errorResponse =
-            ErrorResponse(
-                status = HttpStatus.BAD_REQUEST.value(),
-                error = "Validation Failed",
-                message = "입력값 검증에 실패했습니다",
-                details = errors,
-            )
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
-    }
-
+    // 이유를 알 수 없는 에러 (fallback)
     @ExceptionHandler(Exception::class)
-    fun handleGenericException(ex: Exception): ResponseEntity<ErrorResponse> {
-        val errorResponse =
-            ErrorResponse(
-                status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                error = "Internal Server Error",
-                message = "서버 오류가 발생했습니다",
-            )
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+    fun handleException(exception: Exception): ResponseEntity<ExceptionResponse> {
+        return buildExceptionResponse(GlobalExceptionMessage.INTERNAL_SERVER_ERROR_MESSAGE)
+    }
+
+    // 존재하지 않는 End-Point
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFoundException(exception: NoResourceFoundException): ResponseEntity<ExceptionResponse> {
+        return buildExceptionResponse(GlobalExceptionMessage.NO_RESOURCE_MESSAGE)
+    }
+
+    // BeanValidation 유효성 검증 에러
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(exception: MethodArgumentNotValidException): ResponseEntity<ExceptionResponse> {
+        val errorSpots = exception.bindingResult.fieldErrors.map { fieldError ->
+            ErrorSpot(fieldError.field, fieldError.defaultMessage ?: "Invalid value")
+        }
+        val exceptionMessage = if (exception.bindingResult.fieldErrors.any { it.isBindingFailure }) {
+            GlobalExceptionMessage.ARGUMENT_TYPE_MISMATCH_MESSAGE
+        } else {
+            GlobalExceptionMessage.ARGUMENT_NOT_VALID_MESSAGE
+        }
+
+        return ResponseEntity.status(exceptionMessage.httpStatus)
+            .body(DetailedExceptionResponse.fail(exceptionMessage, errorSpots))
+    }
+
+    // PathVariable, RequestParam 타입 불일치
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatchException(exception: MethodArgumentTypeMismatchException): ResponseEntity<ExceptionResponse> {
+        val type = exception.requiredType?.simpleName ?: "Unknown"
+        val errorSpot = ErrorSpot(exception.name ?: "Unknown", "$type (으)로 변환할 수 없는 요청입니다.")
+        return ResponseEntity.status(GlobalExceptionMessage.ARGUMENT_TYPE_MISMATCH_MESSAGE.httpStatus)
+            .body(DetailedExceptionResponse.fail(GlobalExceptionMessage.ARGUMENT_TYPE_MISMATCH_MESSAGE, errorSpot))
+    }
+
+    // RequestParam 누락
+    @ExceptionHandler(MissingServletRequestParameterException::class)
+    fun handleMissingServletRequestParameterException(exception: MissingServletRequestParameterException): ResponseEntity<ExceptionResponse> {
+        val errorSpot = ErrorSpot(exception.parameterName ?: "Unknown", exception.parameterType)
+        return ResponseEntity.status(GlobalExceptionMessage.MISSING_PARAMETER_MESSAGE.httpStatus)
+            .body(DetailedExceptionResponse.fail(GlobalExceptionMessage.MISSING_PARAMETER_MESSAGE, errorSpot))
+    }
+
+    // 읽을 수 없는 DTO
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(exception: HttpMessageNotReadableException): ResponseEntity<ExceptionResponse> {
+        return buildExceptionResponse(GlobalExceptionMessage.DATA_NOT_READABLE_MESSAGE)
+    }
+
+    // Content-Type 에러
+    @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
+    fun handleHttpMediaTypeNotSupportedException(exception: HttpMediaTypeNotSupportedException): ResponseEntity<ExceptionResponse> {
+        return buildExceptionResponse(GlobalExceptionMessage.UNSUPPORTED_MEDIA_TYPE_MESSAGE)
+    }
+
+    // 비즈니스 예외
+    @ExceptionHandler(BusinessException::class)
+    fun handleBusinessException(exception: BusinessException): ResponseEntity<ExceptionResponse> {
+        return buildExceptionResponse(exception.exceptionMessage)
+    }
+
+    private fun buildExceptionResponse(exceptionMessage: ExceptionMessage): ResponseEntity<ExceptionResponse> {
+        return ResponseEntity.status(exceptionMessage.getHttpStatus())
+            .body(ExceptionResponse.fail(exceptionMessage))
+    }
+
+    private fun isUserAuthenticated(): Boolean {
+        val auth: Authentication? = SecurityContextHolder.getContext().authentication
+        if (auth == null || !auth.isAuthenticated) return false
+        return auth.principal != "anonymousUser"
     }
 }

@@ -1,4 +1,4 @@
-package com.example.backend.filter
+package com.example.backend.global.filter
 
 import com.example.backend.global.security.JwtUtil
 import jakarta.servlet.FilterChain
