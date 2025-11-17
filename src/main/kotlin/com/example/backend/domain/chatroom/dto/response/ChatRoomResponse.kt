@@ -10,6 +10,6 @@ data class ChatRoomResponse (
     val chatRoomType: ChatRoomType,
     val participation: Boolean,
     val userCount: Int,
-    val creatorId: Long
+    val creatorId: Long?
     ) {
 }

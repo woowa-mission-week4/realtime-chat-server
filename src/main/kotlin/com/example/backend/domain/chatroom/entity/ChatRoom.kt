@@ -16,7 +16,8 @@ class ChatRoom(
     description: String,
     maxMembers: Int = 2, // 기본값 개인 톡방
     var chatRoomType: ChatRoomType,
-    var participation: Boolean = false // 채팅방 참가 여부
+    var participation: Boolean = false ,// 채팅방 참가 여부
+    var creatorId: Long? = null //채팅방 생성자 ID
 
 ) : BaseEntity() {
 
