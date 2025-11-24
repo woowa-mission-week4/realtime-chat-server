@@ -19,8 +19,10 @@ class ChatMessage(
     var message: String = "",
 
     @Column(nullable = false)
-    var sendDate: LocalDateTime = LocalDateTime.now()
+    var sendDate: LocalDateTime = LocalDateTime.now(),
+
+    @Enumerated(EnumType.STRING)
+    var type: MessageType = MessageType.TEXT
 ) {
     enum class MessageType { TEXT, IMAGE, OTHER }
-    var type: MessageType = MessageType.TEXT
 }

@@ -13,6 +13,7 @@ import javax.crypto.SecretKey
 class JwtUtil(
     private val jwtProperties: JwtProperties,
 ) {
+
     private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
     }
@@ -35,10 +36,10 @@ class JwtUtil(
 
     fun <T> extractClaim(
         token: String,
-        claimsResolver: (Claims) -> T,
+        resolver: (Claims) -> T,
     ): T {
         val claims = extractAllClaims(token)
-        return claimsResolver(claims)
+        return resolver(claims)
     }
 
     private fun extractAllClaims(token: String): Claims {
@@ -49,19 +50,12 @@ class JwtUtil(
             .payload
     }
 
-    fun validateToken(
-        token: String,
-        userDetails: UserDetails,
-    ): Boolean {
+    fun validateToken(token: String, userDetails: UserDetails): Boolean {
         val email = extractEmail(token)
         return (email == userDetails.username && !isTokenExpired(token))
     }
 
     private fun isTokenExpired(token: String): Boolean {
-        return extractExpiration(token).before(Date())
-    }
-
-    private fun extractExpiration(token: String): Date {
-        return extractClaim(token, Claims::getExpiration)
+        return extractClaim(token, Claims::getExpiration).before(Date())
     }
 }
